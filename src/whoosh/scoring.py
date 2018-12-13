@@ -568,7 +568,14 @@ class MultiWeighting(WeightingModel):
 
     def scorer(self, searcher, fieldname, text, qf=1):
         w = self.weightings.get(fieldname, self.default)
+        searcher.fieldname = fieldname
         return w.scorer(searcher, fieldname, text, qf=qf)
+
+    def final(self, searcher, docnum, score):
+        w = self.weightings.get(searcher.fieldname, self.default)
+        if w.use_final:
+            return w.final(searcher, docnum, score)
+        return score
 
 
 class ReverseWeighting(WeightingModel):
